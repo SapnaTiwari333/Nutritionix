@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:nutritionix/DASHBOARD/bottomnavigation%20bar1.dart';
 import 'package:nutritionix/LOGINPAGE/forgetpassword.dart';
 import 'package:nutritionix/SIGNUPPAGE/signup.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Loginpage extends StatefulWidget {
   @override
@@ -19,26 +17,6 @@ class LoginState extends State<Loginpage> {
 
   final formKey = GlobalKey<FormState>();
 
-  // Check if user is already logged in by checking for the JWT token
-  @override
-  void initState() {
-    super.initState();
-    checkLoggedIn();
-  }
-
-  // Check if JWT token exists in SharedPreferences
-  checkLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('jwt_token');
-    if (token != null) {
-      // If token exists, navigate to the dashboard
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => BottomNavigationWidget()),
-      );
-    }
-  }
-
   // Function to handle login
   void loginUser(BuildContext context) async {
     var regBody = {
@@ -47,31 +25,21 @@ class LoginState extends State<Loginpage> {
     };
 
     try {
-      // Call login API with email and password
       var response = await http.post(
-        Uri.parse('${dotenv.env['BACKEND_URL'] ?? ''}/login'), // Replace with actual URL
+        Uri.parse('http://ec2-15-206-93-136.ap-south-1.compute.amazonaws.com:3000/api/user/login'), // Replace with actual URL
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "email": emailText.text,
-          "password": passText.text,
-        }),
+        body: jsonEncode(regBody),
       );
 
       if (response.statusCode == 200) {
-        // Store JWT token in SharedPreferences
-        var data = jsonDecode(response.body);
-        String token = data['token'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('jwt_token', token);
-
-        // Navigate to the dashboard
+        // Navigate to the dashboard directly upon successful login
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => BottomNavigationWidget()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to login.")),
+          SnackBar(content: Text("Login failed. Please check your credentials.")),
         );
       }
     } catch (error) {
@@ -99,8 +67,8 @@ class LoginState extends State<Loginpage> {
                     child: TextFormField(
                       controller: emailText,
                       validator: (value) {
-                        if (value!.isEmpty) {
-                          return "User name is required";
+                        if (value == null || value.isEmpty) {
+                          return "Email is required";
                         }
                         return null;
                       },
@@ -132,7 +100,7 @@ class LoginState extends State<Loginpage> {
                     child: TextFormField(
                       controller: passText,
                       validator: (value) {
-                        if (value!.isEmpty) {
+                        if (value == null || value.isEmpty) {
                           return "Password is required";
                         }
                         return null;
@@ -220,7 +188,7 @@ class LoginState extends State<Loginpage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        "Don't have Account?",
+                        "Don't have an Account?",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

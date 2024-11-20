@@ -6,7 +6,7 @@ import 'package:nutritionix/LOGINPAGE/login_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
-void main(){
+void main() {
   runApp(const flutterApp());
 }
 class flutterApp extends StatelessWidget{
@@ -53,7 +53,7 @@ class SignupState extends State<Signuppage>{
   void registerUser(BuildContext context, TextEditingController nameText, TextEditingController emailText, TextEditingController passText) async {
     // Request body for user registration
     var regBody = {
-      "name": nameText.text,
+      "username": nameText.text,
       "email": emailText.text,
       "password": passText.text,
     };
@@ -61,7 +61,7 @@ class SignupState extends State<Signuppage>{
     try {
       // Send POST request to the backend
       var response = await http.post(
-        Uri.parse('${dotenv.env['BACKEND_URL'] ?? ''}/register'), // Replace with actual URL
+        Uri.parse('http://ec2-15-206-93-136.ap-south-1.compute.amazonaws.com:3000/api/user/register'), // Replace with actual URL
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(regBody),
       );
@@ -347,7 +347,7 @@ class SignupState extends State<Signuppage>{
                             fontSize:20,
                             color: Colors.black54,
                             fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5)
+                            letterSpacing: 1.5)
                     ),
                   ),
                 ),
@@ -364,7 +364,7 @@ class SignupState extends State<Signuppage>{
                             fontSize:18,
                             color: Colors.black45,
                             fontWeight:FontWeight.bold,
-                        letterSpacing: 1.2)
+                            letterSpacing: 1.2)
                     ),
 
                     const SizedBox(
@@ -377,11 +377,11 @@ class SignupState extends State<Signuppage>{
                         Navigator.push(context,MaterialPageRoute(builder: (context)=>Loginpage()));
                       },
                       child: const Text("Login",
-                          style:TextStyle(
-                              fontSize:18,
-                              color: Colors.blue,
-                              fontWeight:FontWeight.bold,
-                          letterSpacing: 1.2),
+                        style:TextStyle(
+                            fontSize:18,
+                            color: Colors.blue,
+                            fontWeight:FontWeight.bold,
+                            letterSpacing: 1.2),
 
                       ),
                     ),

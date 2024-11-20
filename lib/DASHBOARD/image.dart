@@ -8,25 +8,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 List<CameraDescription> cameras = [];
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  cameras = await availableCameras();
-  runApp(FlutterApp());
-}
-
-class FlutterApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Flutter App",
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: ScannerPage(cameras),
-    );
-  }
-}
 
 class ScannerPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -93,19 +74,37 @@ class ScannerState extends State<ScannerPage> {
 
   Future<void> uploadImage(File imageFile) async {
     try {
-      var request = http.MultipartRequest('POST',  Uri.parse('${dotenv.env['BACKEND_URL'] ?? ''}/login/run'));
+      // Set up the HTTP request for file upload
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://ec2-15-206-93-136.ap-south-1.compute.amazonaws.com:3000/api/user/login/run'),
+      );
+
+      // Add image file to the request
       request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+
+      // Add headers (if required by the backend)
+      request.headers.addAll({
+        "Content-Type": "multipart/form-data",
+        // Add any other headers, e.g., authentication tokens if required by your backend
+      });
+
+      // Send the request
       var response = await request.send();
 
+      // Listen to the response
+      final responseData = await http.Response.fromStream(response);
       if (response.statusCode == 200) {
-        print("Image uploaded successfully");
+        print("Image uploaded successfully: ${responseData.body}");
       } else {
-        print("Image upload failed: ${response.statusCode}");
+        print("Image upload failed with status: ${response.statusCode}");
+        print("Response body: ${responseData.body}");
       }
     } catch (e) {
       print("Error uploading image: $e");
     }
   }
+
 
   @override
   void dispose() {
