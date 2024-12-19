@@ -61,8 +61,7 @@ class SignupState extends State<Signuppage>{
     try {
       // Send POST request to the backend
       var response = await http.post(
-        Uri.parse('http://ec2-15-206-93-136.ap-south-1.compute.amazonaws.com:3000/api/user/register'), // Replace with actual URL
-        headers: {"Content-Type": "application/json"},
+        Uri.parse('http://ec2-15-206-93-136.ap-south-1.compute.amazonaws.com:3000/api/user/register'),
         body: jsonEncode(regBody),
       );
 

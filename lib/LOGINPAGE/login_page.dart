@@ -26,7 +26,7 @@ class LoginState extends State<Loginpage> {
 
     try {
       var response = await http.post(
-        Uri.parse('http://ec2-15-206-93-136.ap-south-1.compute.amazonaws.com:3000/api/user/login'), // Replace with actual URL
+        Uri.parse('http://ec2-15-206-93-136.ap-south-1.compute.amazonaws.com:3000/api/user/login'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(regBody),
       );
